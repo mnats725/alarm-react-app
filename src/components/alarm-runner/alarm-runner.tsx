@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-import { useAlarmStore } from '@/store/alarm-store';
+import { useAlarmStore } from '@/store';
 import { selectAlarms } from '@/store/alarm-selectors';
 import { getMinuteKey, isAlarmDueNow } from '@/utils/alarm.utils';
 import { requestNotificationPermission, showAlarmNotification } from '@/utils/notification.utils';

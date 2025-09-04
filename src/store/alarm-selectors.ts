@@ -1,4 +1,4 @@
-import type { AlarmStore } from './alarm-store';
+import type { AlarmStore } from './alarm-store.type';
 import type { Alarm } from '@/types/alarm.type';
 
 export const selectAlarms = (s: AlarmStore): Alarm[] => s.alarms;

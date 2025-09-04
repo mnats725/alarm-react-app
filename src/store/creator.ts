@@ -1,32 +1,13 @@
-import { create, type StateCreator } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
 import { nanoid } from 'nanoid';
 
 import { clamp01, normalizeTime } from '@/utils/time.utils';
 import { addMinutes, getMinuteKey } from '@/utils/alarm.utils';
 
-import type { Alarm, SoundId } from '@/types/alarm.type';
+import type { Alarm } from '@/types/alarm.type';
+import type { AlarmStore } from './alarm-store.type';
+import type { StateCreator } from 'zustand';
 
-export type AlarmStore = {
-  alarms: Alarm[];
-  addAlarm: (data: {
-    time: string;
-    label?: string;
-    repeat?: Alarm['repeat'];
-    volume?: number;
-    enabled?: boolean;
-    soundId?: SoundId;
-  }) => void;
-  updateAlarm: (id: string, patch: Partial<Omit<Alarm, 'id'>>) => void;
-  toggleAlarm: (id: string, on?: boolean) => void;
-  removeAlarm: (id: string) => void;
-  clearAll: () => void;
-
-  snoozeAlarm: (id: string, minutes?: number) => void;
-  disableAlarm: (id: string) => void;
-};
-
-const creator: StateCreator<AlarmStore, [], []> = (set, get) => ({
+export const creator: StateCreator<AlarmStore, [], []> = (set, get) => ({
   alarms: [],
 
   addAlarm: (data) => {
@@ -34,7 +15,7 @@ const creator: StateCreator<AlarmStore, [], []> = (set, get) => ({
     const label = data.label?.trim() ?? '';
     const repeat = Array.isArray(data.repeat) ? ([...new Set(data.repeat)].sort() as Alarm['repeat']) : [];
     const volume = typeof data.volume === 'number' ? clamp01(data.volume) : 1;
-    const soundId = data.soundId || 'beep';
+    const soundId = data.soundId ?? 'beep';
 
     const alarm: Alarm = {
       id: nanoid(12),
@@ -111,55 +92,3 @@ const creator: StateCreator<AlarmStore, [], []> = (set, get) => ({
     });
   },
 });
-
-type AlarmPersistedState = { alarms: Alarm[] };
-
-export const useAlarmStore = create<AlarmStore>()(
-  persist<AlarmStore, [], [], AlarmPersistedState>(creator, {
-    name: 'alarm-store',
-    storage: createJSONStorage<AlarmPersistedState>(() => localStorage),
-    version: 2,
-
-    partialize: (state): AlarmPersistedState => ({ alarms: state.alarms }),
-
-    migrate: (persistedState: unknown, fromVersion: number): AlarmPersistedState => {
-      if (!(typeof persistedState === 'object' && persistedState !== null)) {
-        return { alarms: [] };
-      }
-
-      const maybeObj = persistedState as { alarms?: unknown };
-
-      if (!Array.isArray(maybeObj.alarms)) {
-        return { alarms: [] };
-      }
-
-      if (fromVersion < 2) {
-        type PersistedV1Alarm = {
-          id: string;
-          time: string;
-          label?: string;
-          enabled?: boolean;
-          repeat?: number[];
-          volume?: number;
-          soundId?: SoundId;
-          snoozeUntilKey?: string | null;
-        };
-
-        const upgraded: Alarm[] = (maybeObj.alarms as PersistedV1Alarm[]).map((raw) => ({
-          id: raw.id,
-          time: raw.time,
-          label: raw.label ?? '',
-          enabled: Boolean(raw.enabled),
-          repeat: Array.isArray(raw.repeat) ? (raw.repeat as Alarm['repeat']) : [],
-          volume: typeof raw.volume === 'number' ? raw.volume : 1,
-          soundId: (raw.soundId as SoundId) ?? 'beep',
-          snoozeUntilKey: raw.snoozeUntilKey ?? null,
-        }));
-
-        return { alarms: upgraded };
-      }
-
-      return { alarms: maybeObj.alarms as Alarm[] };
-    },
-  })
-);

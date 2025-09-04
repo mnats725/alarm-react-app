@@ -19,14 +19,19 @@ const getAudioContextCtor = (): AudioContextCtor | undefined => {
 
 const playOscillator = (volume: number): BeepController => {
   const Ctor = getAudioContextCtor();
+
   if (!Ctor) {
     const audio = new Audio(
       'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABYAZGF0YQQAAAAA/////wAAAP///wAAAP///w=='
     );
+
     audio.volume = Math.max(0, Math.min(1, volume));
     audio.loop = true;
+
     void audio.play();
+
     const stop = (): void => audio.pause();
+    
     return { stop };
   }
 

@@ -1,6 +1,6 @@
 import { useMemo, useCallback } from 'react';
 
-import { useAlarmStore } from '@/store/alarm-store';
+import { useAlarmStore } from '@/store';
 import { selectAlarms } from '@/store/alarm-selectors';
 
 import { AlarmCard } from './alarm-card';

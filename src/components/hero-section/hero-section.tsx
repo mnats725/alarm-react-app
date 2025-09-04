@@ -9,7 +9,7 @@ export type HeroSectionProps = {
 
 export const HeroSection = memo(({ title, lead }: HeroSectionProps) => {
   const finalTitle = title || '⏰ Alarm Clock';
-  const finalLead = lead || 'Эстетичный будильник на React + TS + Zustand. Поехали 🚀';
+  const finalLead = lead || 'Эстетичный будильник сделанный руками Мнаца Аветисяна ;3';
 
   return (
     <section className={styles.section} aria-labelledby="title">

@@ -6,6 +6,7 @@ export const requestNotificationPermission = async (): Promise<NotificationPermi
   if (Notification.permission === 'denied') return 'denied';
 
   const permission = await Notification.requestPermission();
+  
   return permission;
 };
 

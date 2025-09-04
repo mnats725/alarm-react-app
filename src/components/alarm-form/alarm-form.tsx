@@ -7,7 +7,7 @@ import { WeekdayPicker } from './weekday-picker';
 import { FormActions } from './form-actions';
 import { SoundField } from './sound-field';
 
-import { useAlarmStore } from '@/store/alarm-store';
+import { useAlarmStore } from '@/store';
 
 import styles from './alarm-form.module.css';
 
