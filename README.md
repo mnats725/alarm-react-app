@@ -1,69 +1,57 @@
-# React + TypeScript + Vite
+# ⏰ Alarm Clock (React + TS)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Минималистичный будильник с повторами по дням, выбором звука, Snooze (5 мин) и отключением. Состояние сохраняется между сессиями.
 
-Currently, two official plugins are available:
+## Технологии
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+React 18 · TypeScript · Zustand (+persist) · CSS Modules (nesting) · Web Audio API / `<audio>` · Web Notifications · nanoid
 
-## Expanding the ESLint configuration
+## Архитектура
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+src/
+  components/
+    alarm-form/    (time, label, sound, volume, weekday, actions)
+    alarm-list/    (list + alarm-card)
+    alarm-runner/  (tick + toast UI)
+  store/
+    alarm-store/   (creator, types, persist-config, index)
+  utils/           (alarm, notification, sound, time)
+  constants/       (week-days, sounds)
+  types/           (alarm)
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Модель
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```ts
+export type Alarm = {
+  id: string;
+  time: string;
+  label: string;
+  enabled: boolean;
+  repeat: (0 | 1 | 2 | 3 | 4 | 5 | 6)[];
+  volume: number;
+  soundId: 'beep' | 'chime' | 'digital' | 'birds' | 'classic';
+  snoozeUntilKey: string | null; // YYYY-MM-DDTHH:mm
+};
+```
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Store
+
+`addAlarm`, `updateAlarm`, `toggleAlarm`, `removeAlarm`, `clearAll`, `snoozeAlarm(+5m)`, `disableAlarm`.
+Persist v2: храним `{ alarms }`, миграция без `any`.
+
+## Поведение
+
+`AlarmRunner` раз в секунду сверяет «минутный ключ» и при совпадении показывает тост, играет звук, шлёт уведомление.
+
+## Звуки
+
+Файлы в `/public/sounds/*` + пресеты в `constants/sounds.const.ts`. Если файла нет — WebAudio «beep».
+
+## Запуск
+
+```bash
+yarn
+yarn dev
 ```
