@@ -1,50 +1,47 @@
-export type BeepController = {
-  stop: () => void;
-};
+import { SOUND_BY_ID } from '@/constants/sounds.const';
+
+import type { SoundId } from '@/types/alarm.type';
+
+export type BeepController = { stop: () => void };
 
 type AudioContextCtor = new (contextOptions?: AudioContextOptions) => AudioContext;
 
-export const playBeep = (volume: number, seconds: number): BeepController => {
-  if (typeof window === 'undefined') {
-    return { stop: () => undefined };
-  }
+const getAudioContextCtor = (): AudioContextCtor | undefined => {
+  if (typeof window === 'undefined') return undefined;
 
   const w = window as unknown as {
     AudioContext?: AudioContextCtor;
     webkitAudioContext?: AudioContextCtor;
   };
-  const AudioContextRef: AudioContextCtor | undefined = w.AudioContext ?? w.webkitAudioContext;
 
-  if (!AudioContextRef) {
+  return w.AudioContext ?? w.webkitAudioContext;
+};
+
+const playOscillator = (volume: number): BeepController => {
+  const Ctor = getAudioContextCtor();
+  if (!Ctor) {
     const audio = new Audio(
       'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABYAZGF0YQQAAAAA/////wAAAP///wAAAP///w=='
     );
-    const clampedVolume = Math.max(0, Math.min(1, volume));
-    audio.volume = clampedVolume;
+    audio.volume = Math.max(0, Math.min(1, volume));
     audio.loop = true;
     void audio.play();
-    const timeoutId = window.setTimeout(() => audio.pause(), seconds * 1000);
-    const stop = (): void => {
-      window.clearTimeout(timeoutId);
-      audio.pause();
-    };
+    const stop = (): void => audio.pause();
     return { stop };
   }
 
-  const ctx = new AudioContextRef();
+  const ctx = new Ctor();
   const oscillator = ctx.createOscillator();
   const gain = ctx.createGain();
 
   oscillator.type = 'sine';
-  oscillator.frequency.value = 880; // A5
+  oscillator.frequency.value = 880;
   gain.gain.value = Math.max(0, Math.min(1, volume));
-
   oscillator.connect(gain);
   gain.connect(ctx.destination);
-
   oscillator.start();
 
-  const stopNow = (): void => {
+  const stop = (): void => {
     try {
       oscillator.stop();
       oscillator.disconnect();
@@ -54,12 +51,29 @@ export const playBeep = (volume: number, seconds: number): BeepController => {
       // no-op
     }
   };
+  return { stop };
+};
 
-  const timeoutId = window.setTimeout(stopNow, seconds * 1000);
+const playAudioFile = (src: string, volume: number): BeepController => {
+  const audio = new Audio(src);
+
+  audio.volume = Math.max(0, Math.min(1, volume));
+  audio.loop = true;
+
+  void audio.play().catch(() => {});
+
   const stop = (): void => {
-    window.clearTimeout(timeoutId);
-    stopNow();
+    audio.pause();
+    audio.currentTime = 0;
   };
 
   return { stop };
+};
+
+export const playAlarmSound = (soundId: SoundId, volume: number): BeepController => {
+  const sound = SOUND_BY_ID[soundId];
+
+  if (!sound || !sound.src) return playOscillator(volume);
+
+  return playAudioFile(sound.src, volume);
 };
