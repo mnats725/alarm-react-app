@@ -1,13 +1,9 @@
-// 1. Глобальные модули
 import { memo } from 'react';
 
-// 4. Константы
 import { SOUND_OPTIONS } from '@/constants/sounds.const';
 
-// 6. Стили
 import styles from './sound-field.module.css';
 
-// 7. Типы
 import type { ChangeEvent } from 'react';
 import type { SoundId } from '@/types/alarm.type';
 
