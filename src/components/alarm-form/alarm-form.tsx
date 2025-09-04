@@ -19,7 +19,7 @@ export type AlarmFormProps = {
   compact?: boolean;
 };
 
-export const AlarmForm = ({ compact }: AlarmFormProps): JSX.Element => {
+export const AlarmForm = ({ compact }: AlarmFormProps) => {
   const addAlarm = useAlarmStore((state) => state.addAlarm);
 
   const isCompact = compact === true;
