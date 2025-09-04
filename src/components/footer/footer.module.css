@@ -1,0 +1,12 @@
+.footer {
+  max-width: 960px;
+  margin: 48px auto 24px;
+  padding: 0 16px;
+  color: var(--muted);
+  display: grid;
+  place-items: center;
+
+  & small {
+    opacity: 0.9;
+  }
+}

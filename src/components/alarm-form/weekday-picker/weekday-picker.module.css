@@ -1,0 +1,47 @@
+.fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+
+  & .legend {
+    margin-bottom: 8px;
+    font-size: 13px;
+    opacity: 0.85;
+  }
+
+  & .days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  & .day {
+    width: 100%;
+    padding: 10px 0;
+    border-radius: 12px;
+    border: 1px solid color-mix(in oklab, var(--border) 85%, transparent);
+    background: #0f1117;
+    color: var(--fg);
+    cursor: pointer;
+    transition: transform 120ms ease, border-color 120ms ease, background-color 120ms ease;
+
+    &:hover {
+      transform: translateY(-1px);
+      border-color: color-mix(in oklab, var(--accent) 40%, var(--border));
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+  }
+
+  & .dayActive {
+    background: color-mix(in oklab, var(--accent) 20%, #0f1117);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px color-mix(in oklab, var(--accent) 25%, transparent);
+  }
+}

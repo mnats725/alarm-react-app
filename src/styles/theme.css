@@ -1,0 +1,15 @@
+:root {
+  --bg: #0b0c10;
+  --card: #101217;
+  --fg: #eaf1ff;
+  --muted: #a8b3cf;
+  --border: #1f2430;
+  --accent: #6ea8fe;
+  --success: #46d988;
+  --danger: #ff6b6b;
+}
+
+body {
+  background: radial-gradient(1200px 800px at 50% -200px, #121420 0%, var(--bg) 60%) fixed;
+  color: var(--fg);
+}

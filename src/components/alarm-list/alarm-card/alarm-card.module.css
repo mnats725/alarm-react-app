@@ -1,0 +1,90 @@
+.card {
+  border: 1px solid color-mix(in oklab, var(--border) 85%, transparent);
+  border-radius: 14px;
+  background: linear-gradient(180deg, color-mix(in oklab, var(--card) 96%, transparent), var(--card));
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.02);
+  padding: 12px;
+  display: grid;
+  gap: 8px;
+
+  & .head {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 8px;
+  }
+
+  & .time {
+    font-size: 28px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  & .controls {
+    display: flex;
+    gap: 8px;
+  }
+
+  & .toggle,
+  & .remove {
+    padding: 8px 12px;
+    border-radius: 12px;
+    background: #0f1117;
+    color: var(--fg);
+    cursor: pointer;
+    transition: transform 120ms ease, border-color 120ms ease, background-color 120ms ease;
+  }
+
+  & .toggle {
+    border: 1px solid var(--border);
+
+    &:hover {
+      transform: translateY(-1px);
+      border-color: color-mix(in oklab, var(--accent) 40%, var(--border));
+    }
+  }
+
+  & .on {
+    background: color-mix(in oklab, var(--success) 18%, transparent);
+    border-color: var(--success);
+  }
+
+  & .remove {
+    border: 1px solid var(--danger);
+    color: var(--danger);
+
+    &:hover {
+      transform: translateY(-1px);
+      background: color-mix(in oklab, var(--danger) 12%, transparent);
+    }
+  }
+
+  & .label {
+    margin: 0;
+    opacity: 0.9;
+  }
+
+  & .muted {
+    color: var(--muted);
+  }
+
+  & .foot {
+    display: flex;
+  }
+
+  & .repeat {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  & .badge {
+    padding: 4px 8px;
+    border-radius: 10px;
+    background: #0f1117;
+    border: 1px solid var(--border);
+    font-size: 12px;
+  }
+}
